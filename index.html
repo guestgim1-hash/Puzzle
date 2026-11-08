@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>암호 해독 | SECURITY SYSTEM</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at center, #14243b 0%, #050a13 65%, #020409 100%);
+  color: #dffaff;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+#clock {
+  position: absolute;
+  top: 25px;
+  left: 30px;
+  font-size: 23px;
+  letter-spacing: 3px;
+  color: #00eaff;
+  text-shadow: 0 0 12px #00cfff;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 30px;
+}
+
+.door {
+  width: min(520px, 90vw);
+  min-height: 420px;
+  border: 2px solid #00d9ff;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #17283b, #070d18);
+  box-shadow: 0 0 25px #00bfff66,
+              inset 0 0 30px #00aaff22;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 35px;
+}
+
+h1 {
+  font-size: 38px;
+  letter-spacing: 8px;
+  color: #e6fbff;
+  text-shadow: 0 0 15px #00d9ff;
+}
+
+.subtitle {
+  color: #6fabc0;
+  letter-spacing: 3px;
+  font-size: 12px;
+}
+
+.lock {
+  font-size: 65px;
+  margin: 25px 0;
+  filter: drop-shadow(0 0 12px #00d9ff);
+}
+
+button {
+  background: #062b40;
+  border: 1px solid #00d9ff;
+  color: #00eaff;
+  padding: 13px 30px;
+  cursor: pointer;
+  letter-spacing: 3px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #00cfff;
+  color: #001018;
+  box-shadow: 0 0 20px #00d9ff;
+}
+
+button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+#status {
+  margin-top: 20px;
+  color: #ffbd59;
+  font-size: 13px;
+}
+
+#countdown {
+  margin-top: 12px;
+  color: #00eaff;
+  font-size: 17px;
+  letter-spacing: 2px;
+}
+
+.admin {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 245px;
+  padding: 22px;
+  border: 1px solid #ffbd59;
+  background: #111722;
+  box-shadow: 0 0 18px #ffbd5933;
+  text-align: center;
+}
+
+.admin h2 {
+  color: #ffbd59;
+  font-size: 16px;
+  letter-spacing: 3px;
+}
+
+.admin input {
+  width: 100%;
+  padding: 11px;
+  margin: 12px 0;
+  background: #050a12;
+  border: 1px solid #52677b;
+  color: white;
+  outline: none;
+}
+
+.admin input:focus {
+  border-color: #ffbd59;
+}
+
+.admin button {
+  width: 100%;
+  border-color: #ffbd59;
+  color: #ffbd59;
+  background: #292014;
+  padding: 10px;
+  font-size: 11px;
+}
+
+#adminStatus {
+  font-size: 11px;
+  color: #ff7777;
+  margin-top: 12px;
+  min-height: 14px;
+}
+
+#inside {
+  display: none;
+  text-align: center;
+  width: min(650px, 90vw);
+  padding: 35px;
+  border: 2px solid #00d9ff;
+  background: #081321;
+  box-shadow: 0 0 30px #00bfff66;
+}
+
+#inside h1 {
+  font-size: 30px;
+}
+
+.numbers {
+  color: #00eaff;
+  line-height: 2;
+  overflow-wrap: anywhere;
+  font-size: 17px;
+  margin: 30px 0;
+}
+
+@media (max-width: 850px) {
+  body {
+    overflow: auto;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 25px;
+    padding-top: 90px;
+  }
+
+  .admin {
+    position: static;
+    transform: none;
+    width: min(520px, 90vw);
+  }
+
+  #clock {
+    font-size: 18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="clock">00:00:00</div>
+
+<div class="container">
+
+  <div class="door" id="door">
+    <div class="subtitle">SECURITY SYSTEM // ACCESS CONTROL</div>
+    <h1>암호 해독</h1>
+    <div class="lock">🔒</div>
+    <div class="subtitle">RESTRICTED ACCESS</div>
+
+    <div id="status">SYSTEM LOCKED</div>
+    <div id="countdown"></div>
+
+    <button id="enterButton" disabled onclick="enterSystem()">
+      ENTER SYSTEM
+    </button>
+  </div>
+
+  <div class="admin">
+    <h2>ADMIN ACCESS</h2>
+    <div class="subtitle">AUTHORIZED PERSONNEL ONLY</div>
+
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="Enter password"
+      autocomplete="off"
+    >
+
+    <button onclick="adminLogin()">UNLOCK</button>
+
+    <div id="adminStatus"></div>
+  </div>
+
+  <div id="inside">
+    <div class="subtitle">ACCESS GRANTED</div>
+    <h1>ENCRYPTED DATA</h1>
+
+    <div class="numbers" id="secretNumbers">
+      104 116 116 112 115 58 47 47 111 112 101 110 46 107 97 107 97 111 46 99 111 109 47 111 47 103 49 101 119 80 57 86 105
+    </div>
+
+    <button onclick="copyNumbers()">COPY DATA</button>
+  </div>
+
+</div>
+
+<script>
+// 한국 시간 기준 공개 시각
+const releaseTime = new Date("2026-11-09T21:00:00+09:00");
+
+// 관리자 비밀번호
+const ADMIN_PASSWORD = "PasswordForEventHoster";
+
+let adminUnlocked = false;
+
+function updateClock() {
+  const now = new Date();
+
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString("ko-KR", {
+      hour12: false,
+      timeZone: "Asia/Seoul"
+    });
+
+  const remaining = releaseTime - now;
+  const allowed = remaining <= 0 || adminUnlocked;
+
+  const button = document.getElementById("enterButton");
+  const status = document.getElementById("status");
+  const countdown = document.getElementById("countdown");
+
+  button.disabled = !allowed;
+
+  if (adminUnlocked) {
+    status.textContent = "ADMIN ACCESS GRANTED";
+    status.style.color = "#00ff9d";
+    countdown.textContent = "관리자 권한으로 입장 가능";
+  } else if (remaining <= 0) {
+    status.textContent = "ACCESS AVAILABLE";
+    status.style.color = "#00ff9d";
+    countdown.textContent = "SYSTEM UNLOCKED";
+  } else {
+    status.textContent = "SYSTEM LOCKED";
+    status.style.color = "#ffbd59";
+
+    const seconds = Math.floor(remaining / 1000);
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    countdown.textContent =
+      `${days}일 ${String(hours).padStart(2, "0")}:` +
+      `${String(minutes).padStart(2, "0")}:` +
+      `${String(secs).padStart(2, "0")}`;
+  }
+}
+
+function adminLogin() {
+  const input = document.getElementById("adminPassword").value;
+  const message = document.getElementById("adminStatus");
+
+  if (input === ADMIN_PASSWORD) {
+    adminUnlocked = true;
+    message.style.color = "#00ff9d";
+    message.textContent = "ADMIN VERIFIED";
+
+    updateClock();
+  } else {
+    message.style.color = "#ff7777";
+    message.textContent = "INVALID PASSWORD";
+  }
+}
+
+function enterSystem() {
+  const now = new Date();
+
+  if (now < releaseTime && !adminUnlocked) {
+    return;
+  }
+
+  document.getElementById("door").style.display = "none";
+  document.querySelector(".admin").style.display = "none";
+  document.getElementById("inside").style.display = "block";
+}
+
+function copyNumbers() {
+  const text = document.getElementById("secretNumbers").textContent.trim();
+
+  navigator.clipboard.writeText(text).then(() => {
+    alert("암호 숫자가 복사되었습니다!");
+  }).catch(() => {
+    alert("복사에 실패했습니다. 숫자를 직접 선택해 주세요.");
+  });
+}
+
+document.getElementById("adminPassword").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    adminLogin();
+  }
+});
+
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
